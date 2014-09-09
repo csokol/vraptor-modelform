@@ -1,69 +1,73 @@
-#VRaptor-form
+#vraptor-modelform
 
-#Installing
+A plugin to generate html forms based on model classes.
+
+##Installing
 
 Add to your pom:
 
-```
+```xml
     <dependency>
     	<groupId>br.com.caelum.vraptor</groupId>
-    	<artifactId>vraptor-form</artifactId>
+    	<artifactId>vraptor-modelform</artifactId>
     	<version>4.0.0-SNAPSHOT</version>
     </dependency>
+```
     
-```
+##Using it
 
-#Basic validation and mass assignment protection
+Suppose you have the following model class:
 
-```
-@Controller
-public class UsersController {
-  @Inject
-	private Form<User> userForm;
-	  
-	public void add(User user) {  
-	  userForm.bind(user);
-	  userForm.navigate().onErrorUsePageOf(HomeController.class).index();
-	  
-	  //rest of the code here
-  }
+```java
+public class User {
+    private String name;
+    private Calendar birthday;
+    
+    //getters and setters or constructor with fields
 }
 ```
-If you need to protect against Mass assignment, you can use **hasBlackListedFields** or **hasOnlyAllowedFields**.
 
-```
-    public void add(User user) {  
-      userForm.bind(user);
-      
-  		if (userForm.hasBlackListedFields("user.admin")) {
-  			userForm.reject("invalid.params", "Invalid paramters came from your form");
-  		}
-      
-      
-      userForm.navigate().onErrorUsePageOf(HomeController.class).index();
-  
-      //rest of the code here
+To create a model based on `User` class, inject a ModelForm instance of User in your controller:
+
+```java
+
+public class UserController {
+    @Inject
+    private ModelForm<User> form;
+    @Inject
+    private Result result;
+    
+    @Get
+    public void add() {
+        result.include("form", form);
     }
+    
+}
+```
+
+Then, in your in the add.jsp file, you can use the form to generate the html to create a new user:
+
+```jsp
+<%@ taglib prefix="forms" uri="http://vraptor.org/jsp/taglib/modelform" %>
+<!--html stuff -->
+
+<forms:formFor form="${form}"/>
 
 ```
 
-#Errors in your view
+This will generate the required html form to create a new user.
 
+Now, in your controller you can create a method receiving the User built:
+
+```java
+
+public class UserController {
+    //fields and other methods...
+        
+    @Post
+    public void add(User user) {
+        System.out.println("user received from form: " + user);
+    }
+    
+}
 ```
-    <c:if test="${form.hasErrors()}">
-    	<div class="alert alert-danger">
-    		<button type="button" class="close" data-dismiss="alert">&times;</button>
-    		<c:forEach items="${form.allErrors}" var="error">
-    			<b><fmt:message key="${error.category}" /></b> - ${error.message}
-    		</c:forEach>
-    	</div>
-    </c:if>
-
-```
-
-If you need, you can access specific field errors:
-
-```
-  ${userForm.get("login").getErrors()}
-```
-
