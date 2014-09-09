@@ -49,15 +49,18 @@ Then, in your in the add.jsp file, you can use the form to generate the html to 
 
 ```jsp
 <%@ taglib prefix="forms" uri="http://vraptor.org/jsp/taglib/modelform" %>
-<!--html stuff -->
 
-<forms:formFor form="${form}"/>
+<html>
+    <body>
+        <forms:formFor form="${form}"/>
+    </body>
+</html>
 
 ```
 
 This will generate the required html form to create a new user.
 
-Now, in your controller you can create a method receiving the User built:
+Now, in your controller you can create a method receiving the User built with the form data:
 
 ```java
 
