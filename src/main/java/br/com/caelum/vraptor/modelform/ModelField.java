@@ -23,4 +23,8 @@ public class ModelField {
 	public String getType() {
 		return typeMappers.typeOf(field);
 	}
+	
+	public String getJavaType(){
+		return field.getType().getSimpleName();
+	}
 }

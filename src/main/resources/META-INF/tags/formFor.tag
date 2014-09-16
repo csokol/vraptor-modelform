@@ -5,7 +5,7 @@
 <form method="post">
     <c:forEach items="${form.fields}" var="f">
         <label> ${f.name}:
-            <input name="${form.modelName}.${f.name}" type="${f.type}">
+            ${form.inputFor(f)}
         </label>
     </c:forEach>
 

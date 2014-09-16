@@ -5,8 +5,13 @@ import javax.inject.Inject;
 import java.lang.reflect.Field;
 
 public class TypeMappers {
-	@Inject
 	private Instance<TypeMapper> mappers;
+	
+	@Inject
+	public TypeMappers(Instance<TypeMapper> mappers){
+		this.mappers = mappers;
+		
+	}
 
 	public String typeOf(Field field) {
 		for (TypeMapper mapper : mappers) {

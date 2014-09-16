@@ -1,14 +1,19 @@
 package br.com.caelum.vraptor.modelform;
 
 import br.com.caelum.vraptor.modelform.mappers.TypeMappers;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 
 import javax.enterprise.inject.Vetoed;
+
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Scanner;
 
 import static java.lang.Character.toLowerCase;
 import static java.lang.Character.toUpperCase;
@@ -38,10 +43,25 @@ public class ModelForm<T> {
 			}
 		};
 	}
+	
+	public String inputFor(ModelField modelField){
+		String javaType = lowerFirstLetter(modelField.getJavaType());
+		InputStream htmlStream = ModelForm.class.getResourceAsStream("defaultemplates/"+javaType+".html");
+		String htmlField = null;
+		try(Scanner scanner = new Scanner(htmlStream)){
+			htmlField = scanner.useDelimiter("\\Z").next();
+		}
+		
+		return htmlField.replaceAll("#name",getModelName()+"."+modelField.getName());
+	}
 
 	public String getModelName() {
-		String simpleName = this.modelType.getSimpleName();
+		return lowerFirstLetter(this.modelType.getSimpleName());
+	}
+
+	private String lowerFirstLetter(String simpleName) {
 		Character firstLetter = simpleName.charAt(0);
 		return toLowerCase(firstLetter) + simpleName.substring(1);
 	}
+	
 }
