@@ -26,7 +26,7 @@ public class InputResolver {
 	public String resolveInputFor(Class<?> fieldType) {
 		String javaType = StringUtils.decapitalize(fieldType.getSimpleName());
 		InputStream htmlStream = InputResolver.class
-				.getResourceAsStream("defaultemplates/" + javaType + ".html");
+				.getResourceAsStream("/templates/" + javaType + ".html");
 		String htmlField = null;
 		try (Scanner scanner = new Scanner(htmlStream)) {
 			htmlField = scanner.useDelimiter("\\Z").next();
