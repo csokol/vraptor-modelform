@@ -5,28 +5,44 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.enterprise.inject.Vetoed;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
-import br.com.caelum.vraptor.util.StringUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 
-@Vetoed
-public class ModelForm<T> {
+@Named("form")
+@ApplicationScoped
+public class ModelForm {
 
-	private final Class<T> modelType;
-	private final InputResolver inputResolver;
-	private Map<String, Object> params = new HashMap<>();
+	private TemplateGenerator templateGenerator;
 
-	public ModelForm(Class<T> modelType,InputResolver inputResolver) {
-		this.modelType = modelType;
-		this.inputResolver = inputResolver;
+	public ModelForm() {
+		// TODO Auto-generated constructor stub
 	}
 
-	public Collection<ModelField> getFields() {
+	@Inject
+	public ModelForm(TemplateGenerator templateGenerator) {
+		this.templateGenerator = templateGenerator;
+	}
+
+	public String buildFor(Object model) {
+		Collection<ModelField> fields = getFields(model.getClass());
+		Map<String, Object> params = new HashMap<>();
+		FormGenerator formGenerator = new FormGenerator(model.getClass(),
+				new InputResolver(model.getClass(), templateGenerator));
+		params.put("modelFields", fields);
+		params.put("formGenerator", formGenerator);
+
+		return templateGenerator.generate(params, "/form/model_form.ftl");
+	}
+
+	private Collection<ModelField> getFields(Class<?> modelType) {
 		MirrorList<Field> fields = new Mirror().on(modelType).reflectAll()
 				.fields();
 		return Collections2.transform(fields, fieldToModelField());
@@ -39,16 +55,6 @@ public class ModelForm<T> {
 				return new ModelField(input);
 			}
 		};
-	}
-
-	public String inputFor(ModelField modelField) {
-		params.put("name", getModelName() + "." + modelField.getName());
-		String html = inputResolver.resolveInputFor(modelField.getJavaType(),params);
-		return html;
-	}
-
-	public String getModelName() {
-		return StringUtils.decapitalize(this.modelType.getSimpleName());
 	}
 
 }
