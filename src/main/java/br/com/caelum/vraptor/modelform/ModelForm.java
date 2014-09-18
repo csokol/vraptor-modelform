@@ -2,6 +2,8 @@ package br.com.caelum.vraptor.modelform;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.enterprise.inject.Vetoed;
 
@@ -17,6 +19,7 @@ public class ModelForm<T> {
 
 	private final Class<T> modelType;
 	private final InputResolver inputResolver;
+	private Map<String, Object> params = new HashMap<>();
 
 	public ModelForm(Class<T> modelType,InputResolver inputResolver) {
 		this.modelType = modelType;
@@ -39,9 +42,9 @@ public class ModelForm<T> {
 	}
 
 	public String inputFor(ModelField modelField) {
-		String html = inputResolver.resolveInputFor(modelField.getJavaType());
-		return html.replaceAll("#name",
-				getModelName() + "." + modelField.getName());
+		params.put("name", getModelName() + "." + modelField.getName());
+		String html = inputResolver.resolveInputFor(modelField.getJavaType(),params);
+		return html;
 	}
 
 	public String getModelName() {
