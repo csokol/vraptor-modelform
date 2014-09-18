@@ -25,12 +25,24 @@ public class InputResolver {
 
 	public String resolveInputFor(Class<?> fieldType) {
 		String javaType = StringUtils.decapitalize(fieldType.getSimpleName());
-		InputStream htmlStream = InputResolver.class
-				.getResourceAsStream("/templates/" + javaType + ".html");
+		InputStream htmlStream = stream(javaType);
 		String htmlField = null;
 		try (Scanner scanner = new Scanner(htmlStream)) {
 			htmlField = scanner.useDelimiter("\\Z").next();
 		}
 		return htmlField;
+	}
+
+	private InputStream stream(String javaType) {
+		InputStream htmlStream = InputResolver.class
+				.getResourceAsStream("/templates/form/"
+						+ StringUtils.decapitalize(modelType.getSimpleName())
+						+ "/" + javaType + ".html");
+		if (htmlStream == null) {
+			htmlStream = InputResolver.class
+					.getResourceAsStream("/templates/form/" + javaType
+							+ ".html");
+		}
+		return htmlStream;
 	}
 }
