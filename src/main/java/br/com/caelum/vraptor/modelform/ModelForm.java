@@ -1,6 +1,7 @@
 package br.com.caelum.vraptor.modelform;
 
 import br.com.caelum.vraptor.modelform.mappers.TypeMappers;
+import br.com.caelum.vraptor.util.StringUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -45,7 +46,7 @@ public class ModelForm<T> {
 	}
 	
 	public String inputFor(ModelField modelField){
-		String javaType = lowerFirstLetter(modelField.getJavaType());
+		String javaType = StringUtils.decapitalize(modelField.getJavaType());
 		InputStream htmlStream = ModelForm.class.getResourceAsStream("defaultemplates/"+javaType+".html");
 		String htmlField = null;
 		try(Scanner scanner = new Scanner(htmlStream)){
@@ -56,12 +57,7 @@ public class ModelForm<T> {
 	}
 
 	public String getModelName() {
-		return lowerFirstLetter(this.modelType.getSimpleName());
-	}
-
-	private String lowerFirstLetter(String simpleName) {
-		Character firstLetter = simpleName.charAt(0);
-		return toLowerCase(firstLetter) + simpleName.substring(1);
+		return StringUtils.decapitalize(this.modelType.getSimpleName());
 	}
 	
 }
