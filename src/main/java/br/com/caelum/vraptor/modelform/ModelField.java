@@ -1,7 +1,5 @@
 package br.com.caelum.vraptor.modelform;
 
-import br.com.caelum.vraptor.modelform.mappers.TypeMappers;
-
 import java.lang.reflect.Field;
 
 /**
@@ -9,22 +7,18 @@ import java.lang.reflect.Field;
  */
 public class ModelField {
 	private final Field field;
-	private final TypeMappers typeMappers;
 
-	public ModelField(Field field, TypeMappers typeMappers) {
+	public ModelField(Field field) {
 		this.field = field;
-		this.typeMappers = typeMappers;
 	}
 
 	public String getName() {
 		return field.getName();
 	}
 
-	public String getType() {
-		return typeMappers.typeOf(field);
+	public Class<?> getJavaType(){
+		return field.getType();
 	}
 	
-	public String getJavaType(){
-		return field.getType().getSimpleName();
-	}
+	
 }
